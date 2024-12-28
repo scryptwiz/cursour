@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Cursor</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            cursor: none;
+            overflow: hidden;
+        }
+
+        .custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background: transparent;
+            border: 2px solid black;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: transform 0.15s ease, background 0.3s ease, width 0.3s, height 0.3s;
+        }
+
+        .hover-target {
+            display: inline-block;
+            padding: 10px;
+            background: lightblue;
+            margin: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .custom-cursor.hover {
+            background: black;
+            width: 30px;
+            height: 30px;
+        }
+
+        h1 {
+            position: relative;
+            background-color: lightcoral;
+        }
+
+        h1::before {
+            content: "I am Kelvin👋";
+            margin-right: 10px;
+
+        }
+
+        h1::after {
+            content: "";
+            position: absolute;
+            background-color: blue;
+            width: 60px;
+            height: 60px;
+            top: 0;
+            right: 0;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+<div class="hover-target">Hover over me!</div>
+<div class="hover-target">Another target!</div>
+<div id="customCursor" class="custom-cursor"></div>
+<h1>Hello world</h1>
+
+<script>
+    (() => {
+        const cursor = document.getElementById("customCursor");
+        const hoverTargets = document.querySelectorAll(".hover-target");
+
+        // Retrieve last position from localStorage
+        const lastPosition = JSON.parse(localStorage.getItem("cursorPosition")) || {
+            x: window.innerWidth / 2,
+            y: window.innerHeight / 2
+        };
+
+        // Initialize cursor at the last position
+        cursor.style.transform = `translate(${lastPosition.x}px, ${lastPosition.y}px)`;
+
+        document.addEventListener("mousemove", (event) => {
+            cursor.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
+
+            // Save position to localStorage
+            localStorage.setItem("cursorPosition", JSON.stringify({x: event.clientX, y: event.clientY}));
+        });
+
+        // Fade cursor in/out when entering or leaving the page
+        document.addEventListener("mouseenter", () => cursor.style.opacity = 1);
+        document.addEventListener("mouseleave", () => cursor.style.opacity = 0);
+
+        // Add hover effect
+        hoverTargets.forEach(target => {
+            target.addEventListener("mouseenter", () => cursor.classList.add("hover"));
+            target.addEventListener("mouseleave", () => cursor.classList.remove("hover"));
+        });
+    })();
+</script>
+</body>
+</html>
